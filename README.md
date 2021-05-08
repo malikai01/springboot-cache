@@ -1,4 +1,4 @@
-# springboot-cache
+# springboot + mybatis + mysql + caffenie + swagger
 demo for springboot-cache
 
 springboot + mybatis + mysql + caffenie + swagger
