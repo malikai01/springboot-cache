@@ -23,4 +23,7 @@ logging:
         demo:
          dao: debug
 
+#是否激活 swagger true or false
+swagger:
+  enable: true
 

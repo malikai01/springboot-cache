@@ -1,5 +1,6 @@
 package com.mlk.cache.springbootcache.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,7 +11,8 @@ import java.io.Serializable;
  * @date 2021-4-25 16:26
  **/
 @Data
-public class Users implements Serializable {
+@AllArgsConstructor
+public class UsersDto implements Serializable {
     private Integer id;
 
     private String username;

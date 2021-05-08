@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mlk.cache.springbootcache.dao.UsersMapper">
-    <resultMap id="BaseResultMap" type="com.mlk.cache.springbootcache.model.Users">
+    <resultMap id="BaseResultMap" type="com.mlk.cache.springbootcache.model.UsersDto">
         <!--
           WARNING - @mbggenerated
         -->
@@ -15,4 +15,17 @@
     <select id="queryUserById" resultMap="BaseResultMap">
         select * from users where id = #{userId}
     </select>
+    <!--useGeneratedKeys="true" 表示给主键设置自增长-->
+    <!--keyProperty="id"  表示将自增长后的Id赋值给实体类中的Id字段-->
+    <insert id="add" parameterType="com.mlk.cache.springbootcache.model.Users" useGeneratedKeys="true" keyProperty="id">
+        insert into users (username, password, org_id) values(#{username},#{password},#{orgId});
+    </insert>
+
+    <update id="update" parameterType="com.mlk.cache.springbootcache.model.Users">
+        update users  <set>username = #{username},password=#{password}</set> where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from users where id = #{userId}
+    </delete>
 </mapper>
