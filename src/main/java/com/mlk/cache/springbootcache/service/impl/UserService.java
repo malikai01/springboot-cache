@@ -6,11 +6,16 @@ import com.mlk.cache.springbootcache.event.convert.UserEventConvert;
 import com.mlk.cache.springbootcache.model.Users;
 import com.mlk.cache.springbootcache.service.IUserService;
 import com.mlk.cache.springbootcache.event.util.ApplicationEventUtil;
+import com.mlk.cache.springbootcache.util.JsonUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author malikai
@@ -27,12 +32,22 @@ public class UserService implements IUserService {
     private ApplicationEventUtil applicationEventUtil;
     @Autowired
     private UserEventConvert eventConvert;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     @Cacheable(value = "queryUserById", key = "#userId")
     public Users queryUserById(Integer userId) {
-        Users users = new Users();
-        BeanUtils.copyProperties(usersMapper.queryUserById(userId), users);
+        ValueOperations<String, Users> valueOperations = redisTemplate.opsForValue();
+        String key = String.format("queryUserById:userId:%d", userId);
+        System.out.println(JsonUtil.object2JSON(valueOperations.get(key)));
+        Users users = valueOperations.get(key);
+        if (users == null) {
+            users = new Users();
+            BeanUtils.copyProperties(usersMapper.queryUserById(userId), users);
+            valueOperations.set(key, users);
+            redisTemplate.expire(key, 5, TimeUnit.MINUTES);
+        }
         return users;
     }
 
