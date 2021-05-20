@@ -7,6 +7,7 @@ import com.mlk.cache.springbootcache.model.Users;
 import com.mlk.cache.springbootcache.service.IUserService;
 import com.mlk.cache.springbootcache.event.util.ApplicationEventUtil;
 import com.mlk.cache.springbootcache.util.JsonUtil;
+import com.mlk.cache.springbootcache.util.RedisUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,29 +34,29 @@ public class UserService implements IUserService {
     @Autowired
     private UserEventConvert eventConvert;
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisUtil redisUtil;
 
     @Override
     @Cacheable(value = "queryUserById", key = "#userId")
     public Users queryUserById(Integer userId) {
-        ValueOperations<String, Users> valueOperations = redisTemplate.opsForValue();
         String key = String.format("queryUserById:userId:%d", userId);
-        System.out.println(JsonUtil.object2JSON(valueOperations.get(key)));
-        Users users = valueOperations.get(key);
+        System.out.println(JsonUtil.object2JSON(redisUtil.get(key)));
+        Users users = (Users) redisUtil.get(key);
         if (users == null) {
             users = new Users();
             BeanUtils.copyProperties(usersMapper.queryUserById(userId), users);
-            valueOperations.set(key, users);
-            redisTemplate.expire(key, 5, TimeUnit.MINUTES);
+            redisUtil.set(key, users, 5L, TimeUnit.MINUTES);
         }
         return users;
     }
 
     @Override
     public void add(Users user) {
-        usersMapper.add(user);
-        //发布用户变更事件
-        applicationEventUtil.sendChangeEventSingle(new UserChangeEvent<>(user));
+        int result = usersMapper.add(user);
+        if (result > 0) {
+            //发布用户变更事件
+            applicationEventUtil.sendChangeEventSingle(new UserChangeEvent<>(user));
+        }
     }
 
     @Override

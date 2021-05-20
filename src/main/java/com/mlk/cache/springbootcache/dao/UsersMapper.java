@@ -31,7 +31,7 @@ public interface UsersMapper {
      * @date 2021-5-8 15:05
      * @version 1.0.0
      **/
-    void add(Users user);
+    int add(Users user);
 
     /**
      * 更新用户
@@ -42,7 +42,7 @@ public interface UsersMapper {
      * @date 2021-5-8 15:09
      * @version 1.0.0
      **/
-    void update(Users user);
+    int update(Users user);
 
     /**
      * 删除用户
@@ -53,5 +53,5 @@ public interface UsersMapper {
      * @date 2021-5-8 15:12
      * @version 1.0.0
      **/
-    void delete(Integer userId);
+    int delete(Integer userId);
 }
