@@ -3,6 +3,8 @@ server:
 
 
 spring:
+  main:
+    banner-mode: off
   datasource:
     username: root
     password: root
@@ -17,6 +19,7 @@ mybatis:
 
 #showSql
 logging:
+  config: classpath:log4j2.xml
   level:
     com:
       example:
